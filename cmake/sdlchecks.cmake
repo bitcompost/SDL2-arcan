@@ -627,6 +627,29 @@ macro(CheckX11)
   cmake_pop_check_state()
 endmacro()
 
+macro(CheckArcan)
+  if(SDL_ARCAN)
+    pkg_check_modules(PKG_ASHMIF arcan-shmif-ext)
+    if(PKG_ASHMIF_FOUND)
+      list(APPEND EXTRA_CFLAGS ${PKG_ASHMIF_CFLAGS})
+      set(HAVE_ARCAN TRUE)
+      set(HAVE_VIDEO_ARCAN TRUE)
+      set(HAVE_AUDIO_ARCAN TRUE)
+      set(HAVE_SDL_VIDEO TRUE)
+      set(HAVE_SDL_AUDIO TRUE)
+
+      file(GLOB ARCAN_SOURCES ${SDL2_SOURCE_DIR}/src/video/arcan/*.c ${SDL2_SOURCE_DIR}/src/audio/arcan/*.c)
+      set(SOURCE_FILES ${SOURCE_FILES} ${ARCAN_SOURCES})
+
+      list(APPEND EXTRA_LDFLAGS ${PKG_ASHMIF_LDFLAGS})
+
+      set(SDL_VIDEO_DRIVER_ARCAN 1)
+      set(SDL_AUDIO_DRIVER_ARCAN 1) # they come together
+      list(APPEND EXTRA_CFLAGS "-DSDL_VIDEO_DRIVER_ARCAN")
+    endif()
+  endif()
+endmacro()
+
 macro(WaylandProtocolGen _SCANNER _CODE_MODE _XML _PROTL)
     set(_WAYLAND_PROT_C_CODE "${CMAKE_CURRENT_BINARY_DIR}/wayland-generated-protocols/${_PROTL}-protocol.c")
     set(_WAYLAND_PROT_H_CODE "${CMAKE_CURRENT_BINARY_DIR}/wayland-generated-protocols/${_PROTL}-client-protocol.h")

@@ -470,6 +470,7 @@ dep_option(SDL_WAYLAND_LIBDECOR    "Use client-side window decorations on Waylan
 dep_option(SDL_WAYLAND_LIBDECOR_SHARED     "Dynamically load libdecor support" ON "SDL_WAYLAND_LIBDECOR;SDL_WAYLAND_SHARED" OFF)
 dep_option(SDL_WAYLAND_QT_TOUCH    "QtWayland server support for Wayland video driver" ON "SDL_WAYLAND" OFF)
 set_option(SDL_RPI                 "Use Raspberry Pi 0-3 video driver" ${UNIX_SYS})
+set_option(SDL_ARCAN               "Use Arcan video driver" ${UNIX_SYS})
 set_option(SDL_COCOA               "Use Cocoa video driver" ${APPLE})
 set_option(SDL_DIRECTX             "Use DirectX for Windows audio/video" ${WINDOWS})
 set_option(SDL_XINPUT              "Use Xinput for Windows" ${WINDOWS})
@@ -1495,6 +1496,7 @@ elseif(UNIX AND NOT APPLE AND NOT RISCOS AND NOT HAIKU)
     # Need to check for Raspberry PI first and add platform specific compiler flags, otherwise the test for GLES fails!
     CheckRPI()
     CheckX11()
+    CheckArcan()
     CheckDirectFB()
     # Need to check for EGL first because KMSDRM and Wayland depends on it.
     CheckEGL()
