@@ -645,7 +645,7 @@ macro(CheckArcan)
 
       set(SDL_VIDEO_DRIVER_ARCAN 1)
       set(SDL_AUDIO_DRIVER_ARCAN 1) # they come together
-      list(APPEND EXTRA_CFLAGS "-DSDL_VIDEO_DRIVER_ARCAN")
+      list(APPEND EXTRA_CFLAGS "-DSDL_VIDEO_DRIVER_ARCAN -DSDL_AUDIO_DRIVER_ARCAN")
     endif()
   endif()
 endmacro()
