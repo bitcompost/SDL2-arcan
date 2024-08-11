@@ -47,6 +47,7 @@ typedef struct {
     bool cursor_reject;
     size_t n_windows;
     struct arcan_shmif_cont clip_in, clip_out, cursor, mcont;
+    char* clip_last;
     uint8_t wndalloc;
     int disp_w, disp_h;
     struct arcan_event* pqueue;

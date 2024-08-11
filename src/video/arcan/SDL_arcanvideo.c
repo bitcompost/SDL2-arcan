@@ -203,6 +203,37 @@ Arcan_SetDisplayMode(_THIS, SDL_VideoDisplay* sdl_display, SDL_DisplayMode* mode
     return SDL_Unsupported();
 }
 
+static int
+Arcan_SetClipboardText(_THIS, const char* text)
+{
+    arcan_event msgev = {
+        .ext.kind = ARCAN_EVENT(MESSAGE)
+    };
+    Arcan_SDL_Meta *meta = _this->driverdata;
+    if (!meta->clip_out.vidp || !text)
+        return 0;
+
+    arcan_shmif_pushutf8(&meta->clip_out, &msgev, text, strlen(text));
+
+    if (meta->clip_last)
+        SDL_free(meta->clip_last);
+
+    meta->clip_last = SDL_strdup(text);
+
+    return 0;
+}
+
+static char*
+Arcan_GetClipboardText(_THIS)
+{
+    Arcan_SDL_Meta *meta = _this->driverdata;
+
+    if (meta->clip_last == NULL)
+        return SDL_strdup("");
+
+    return SDL_strdup(meta->clip_last);
+}
+
 /*
  * need to cover:
  *  1. no connection
@@ -353,11 +384,11 @@ Arcan_CreateDevice()
     device->HideScreenKeyboard       = NULL;
     device->IsScreenKeyboardShown    = NULL;
 
-    /* this is 'on demand' in that we request a subseg. on first call,
-     * and if that request goes through, we have one */
-    device->SetClipboardText = NULL;
-    device->GetClipboardText = NULL;
+    device->SetClipboardText = Arcan_SetClipboardText;
+    device->GetClipboardText = Arcan_GetClipboardText;
     device->HasClipboardText = NULL;
+
+    device->SetPrimarySelectionText = Arcan_SetClipboardText;
 
     device->ShowMessageBox = NULL;
 

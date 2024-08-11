@@ -220,6 +220,21 @@ static void process_target(struct arcan_shmif_cont* prim,
     case TARGET_COMMAND_NEWSEGMENT:
 /* FIXME: if output segment, register new capture / audio device -
  * otherwise the only segment that should arrive here clipboard paste */
+        if (ev.ioevs[2].iv == SEGID_CLIPBOARD_PASTE){
+            if (!meta->clip_in.vidp){
+                meta->clip_in = arcan_shmif_acquire(
+                    prim, NULL, SEGID_CLIPBOARD_PASTE, 0);
+            }
+        }
+/*
+ * the requested clipboard has arrived
+ */
+        else if (ev.ioevs[1].iv == 0 && ev.ioevs[3].iv == 0xc1b0a12d){
+            if (!meta->clip_out.vidp){
+                meta->clip_out = arcan_shmif_acquire(
+                    prim, NULL, SEGID_CLIPBOARD, 0);
+            }
+        }
     break;
     default:
     break;
@@ -287,6 +302,12 @@ void Arcan_PumpEvents(_THIS)
 
 /* FIXME: should switch to next window here */
         con = NULL;
+    }
+
+    while (arcan_shmif_poll(&meta->clip_in, &ev) > 0){
+        if (ev.category == EVENT_TARGET
+            && ev.tgt.kind == TARGET_COMMAND_MESSAGE)
+            SDL_SendKeyboardText(ev.tgt.message);
     }
 
     SDL_UnlockMutex(meta->av_sync);

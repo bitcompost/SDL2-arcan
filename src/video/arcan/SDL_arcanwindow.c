@@ -97,6 +97,15 @@ Arcan_CreateWindow(_THIS, SDL_Window* window)
         data->con = &meta->mcont;
     }
 
+    arcan_shmif_enqueue(&meta->mcont, &(struct arcan_event){
+        .category = EVENT_EXTERNAL,
+        .ext.kind = ARCAN_EVENT(SEGREQ),
+        .ext.segreq.width = 1,
+        .ext.segreq.height = 1,
+        .ext.segreq.kind = SEGID_CLIPBOARD,
+        .ext.segreq.id = 0xc1b0a12d
+    });
+
     window->driverdata = data;
     window->x = 0;
     window->y = 0;
