@@ -307,11 +307,21 @@ void Arcan_PumpEvents(_THIS)
     while (arcan_shmif_poll(&meta->clip_in, &ev) > 0){
         if (ev.category == EVENT_TARGET
             && ev.tgt.kind == TARGET_COMMAND_MESSAGE){
-            
-            if (meta->clip_last)
-                SDL_free(meta->clip_last);
+            if (!meta->clip_tmp) {
+                meta->clip_tmp = SDL_strdup(ev.tgt.message);
+            }
+            else {
+                char *tmp = meta->clip_tmp;
+                SDL_asprintf(&meta->clip_tmp, "%s%s", tmp, ev.tgt.message);
+                SDL_free(tmp);
+            }
 
-            meta->clip_last = SDL_strdup(ev.tgt.message);
+            if (!ev.tgt.ioevs[0].iv) { // clipboard finished    
+                if (meta->clip_last)
+                    SDL_free(meta->clip_last);
+                meta->clip_last = meta->clip_tmp;
+                meta->clip_tmp = NULL;
+            }
         }
     }
 
