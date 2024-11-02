@@ -306,8 +306,13 @@ void Arcan_PumpEvents(_THIS)
 
     while (arcan_shmif_poll(&meta->clip_in, &ev) > 0){
         if (ev.category == EVENT_TARGET
-            && ev.tgt.kind == TARGET_COMMAND_MESSAGE)
-            SDL_SendKeyboardText(ev.tgt.message);
+            && ev.tgt.kind == TARGET_COMMAND_MESSAGE){
+            
+            if (meta->clip_last)
+                SDL_free(meta->clip_last);
+
+            meta->clip_last = SDL_strdup(ev.tgt.message);
+        }
     }
 
     SDL_UnlockMutex(meta->av_sync);
